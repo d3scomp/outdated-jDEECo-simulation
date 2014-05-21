@@ -1,11 +1,15 @@
-package cz.cuni.mff.d3s.deeco.simulation;
+package cz.cuni.mff.d3s.deeco.simulation.omnet;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import cz.cuni.mff.d3s.deeco.network.Host;
 import cz.cuni.mff.d3s.deeco.network.NetworkInterface;
 import cz.cuni.mff.d3s.deeco.network.NetworkProvider;
+import cz.cuni.mff.d3s.deeco.network.PositionProvider;
 import cz.cuni.mff.d3s.deeco.scheduler.CurrentTimeProvider;
+import cz.cuni.mff.d3s.deeco.simulation.CallbackProvider;
+import cz.cuni.mff.d3s.deeco.simulation.SimulationHost;
 
 /**
  * Class representing the entry point for a simulation. It is responsible for
@@ -56,7 +60,6 @@ public class OMNetSimulation implements CurrentTimeProvider, NetworkProvider,
 	 * method without changing its C counterpart.
 	 */
 	private native void nativeRun(String environment, String configFile);
-
 	/**
 	 * Registers a callback within the simulation resulting in method "at"
 	 * execution at the absoluteTime. Do not change this method without changing
@@ -66,19 +69,23 @@ public class OMNetSimulation implements CurrentTimeProvider, NetworkProvider,
 	 * @param nodeId
 	 */
 	private native void nativeCallAt(double absoluteTime, String nodeId);
-
 	private native boolean nativeIsPositionInfoAvailable(String nodeId);
-
+	/**
+	 * 
+	 * @param nodeId
+	 * @return
+	 */
 	private native double nativeGetPositionX(String nodeId);
-
 	private native double nativeGetPositionY(String nodeId);
-
 	private native double nativeGetPositionZ(String nodeId);
+	private native double nativeSetPositionX(String nodeId, double value);
+	private native double nativeSetPositionY(String nodeId, double value);
+	private native double nativeSetPositionZ(String nodeId, double value);
 
-	private final Map<String, Host> networkAddressesToHosts;
+	private final Map<String, SimulationHost> networkAddressesToHosts;
 
 	public OMNetSimulation() {
-		networkAddressesToHosts = new HashMap<String, Host>();
+		networkAddressesToHosts = new HashMap<String, SimulationHost>();
 	}
 
 	public void initialize() {
@@ -90,12 +97,12 @@ public class OMNetSimulation implements CurrentTimeProvider, NetworkProvider,
 	 * 
 	 * @return new host instance
 	 */
-	public Host getHost(String logicalId, String networkId) {
-		Host host;
+	public SimulationHost getHost(String logicalId, String networkId) {
+		SimulationHost host;
 		if (networkAddressesToHosts.containsKey(networkId)) {
 			host = networkAddressesToHosts.get(networkId);
 		} else {
-			host = new Host(this, this, this, logicalId);
+			host = new SimulationHost(this, this, this, logicalId);
 			networkAddressesToHosts.put(networkId, host);
 			registerInNetwork(host, networkId);
 		}

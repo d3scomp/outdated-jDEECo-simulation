@@ -1,4 +1,4 @@
-package cz.cuni.mff.d3s.deeco.simulation;
+package cz.cuni.mff.d3s.deeco.simulation.omnet;
 
 import java.util.Collection;
 
@@ -13,11 +13,13 @@ import cz.cuni.mff.d3s.deeco.network.PublisherTask;
 import cz.cuni.mff.d3s.deeco.runtime.RuntimeFramework;
 import cz.cuni.mff.d3s.deeco.runtime.RuntimeFrameworkImpl;
 import cz.cuni.mff.d3s.deeco.scheduler.Scheduler;
+import cz.cuni.mff.d3s.deeco.simulation.CallbackProvider;
+import cz.cuni.mff.d3s.deeco.simulation.SimulationHost;
 import cz.cuni.mff.d3s.deeco.simulation.scheduler.SimulationScheduler;
 
-public class SimulationRuntimeBuilder {
+public class OMNetSimulationRuntimeBuilder {
 
-	public RuntimeFramework build(Host host, CallbackProvider callbackProvider, RuntimeMetadata model, Collection<DirectRecipientSelector> recipientSelectors, DirectGossipStrategy directGossipStrategy) {
+	public RuntimeFramework build(SimulationHost host, CallbackProvider callbackProvider, RuntimeMetadata model, Collection<DirectRecipientSelector> recipientSelectors, DirectGossipStrategy directGossipStrategy) {
 		if (model == null) {
 			throw new IllegalArgumentException("Model must not be null");
 		}
@@ -41,7 +43,7 @@ public class SimulationRuntimeBuilder {
 		
 		// Bind KnowledgeDataReceiver with PacketDataReceiver
 		host.getPacketReceiver().setKnowledgeDataReceiver(kdManager);
-
+		
 		// Set up the publisher task
 		PublisherTask publisherTask = new PublisherTask(
 				scheduler, 
